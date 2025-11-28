@@ -19,7 +19,7 @@
             padding: 20px 12px 40px;
         }
 
-        /* 主卡片容器：加了 id="landing-card" 的就是它 */
+        /* 主卡片容器 */
         .wrapper {
             width: clamp(880px, 70vw, 1320px); /* 自适应宽度，上下限控制 */
             margin: 24px auto 40px;
@@ -175,7 +175,7 @@
             cursor: default;
         }
 
-        /* 暖色按钮（橙色） */
+        /* 暖色按钮（橙） */
         .btn-warm {
             background: #f97316;
             border-color: #f97316;
@@ -186,7 +186,7 @@
             border-color: #ea580c;
         }
 
-        /* 冷色按钮（蓝色） */
+        /* 冷色按钮（蓝） */
         .btn-cold {
             background: #2563eb;
             border-color: #2563eb;
@@ -338,7 +338,7 @@
 
 <body>
 <div class="page-shell">
-    <!-- 给主卡片加上 id="landing-card" -->
+    <!-- 主卡片加 id，用来做缩放 -->
     <div class="wrapper" id="landing-card">
         <div class="left">
             <img id="heroImage" src="warm.png" alt="Kare Yoga program" />
@@ -474,7 +474,8 @@
 
     let startTime = Date.now();
     let hasSubmitted = false;
-    let hasLoggedSession = false;
+    let hasLoggedViewOnly = false;
+    let hasLoggedSubmit = false;
 
     function generateSubjectId() {
         return (
@@ -506,6 +507,32 @@
             mode: "no-cors",
             body,
             keepalive: options.keepalive === true
+        });
+    }
+
+    function logSession(eventType, emailValue, options = {}) {
+        // view_only 和 submit 各自最多记录一次
+        if (eventType === "view_only") {
+            if (hasLoggedViewOnly) return;
+            hasLoggedViewOnly = true;
+        } else if (eventType === "submit") {
+            if (hasLoggedSubmit) return;
+            hasLoggedSubmit = true;
+        }
+
+        const staySeconds = Math.round((Date.now() - startTime) / 1000);
+        const stayField = document.getElementById("stayTimeField");
+        stayField.value = staySeconds;
+
+        const payload = {
+            event_type: eventType,
+            email: emailValue || "",
+            stay_seconds: String(staySeconds),
+            ...window.__commonPayload
+        };
+
+        sendToSheet(payload, options).catch((err) => {
+            console.error("logSession error:", err);
         });
     }
 
@@ -580,25 +607,8 @@
             referer: document.referrer || "",
             ...envInfo
         };
-
-        function logSession(eventType, emailValue, options = {}) {
-            if (hasLoggedSession) return;
-            hasLoggedSession = true;
-
-            const staySeconds = Math.round((Date.now() - startTime) / 1000);
-            stayField.value = staySeconds;
-
-            const payload = {
-                event_type: eventType,
-                email: emailValue || "",
-                stay_seconds: String(staySeconds),
-                ...commonPayload
-            };
-
-            sendToSheet(payload, options).catch((err) => {
-                console.error("logSession error:", err);
-            });
-        }
+        // 挂到 window 上，给 logSession 用
+        window.__commonPayload = commonPayload;
 
         // 输入时清除错误提示
         emailInput.addEventListener("input", () => {
