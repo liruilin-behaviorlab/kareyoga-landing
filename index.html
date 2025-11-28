@@ -223,8 +223,39 @@
             40% { transform: translateY(-4px); opacity: 1; }
         }
 
+        /* 大屏优化：更宽一点 & 字号略大 */
+        @media (min-width: 1200px) {
+            .wrapper {
+                max-width: 1120px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            .lead,
+            ul,
+            .closing,
+            .email-label {
+                font-size: 15px;
+            }
+        }
+
+        @media (min-width: 1536px) {
+            .wrapper {
+                max-width: 1280px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            .lead,
+            ul,
+            .closing,
+            .email-label {
+                font-size: 16px;
+            }
+        }
+
         @media (max-width: 768px) {
-            /* 手机端恢复“上图下文”的感觉，并且取消卡片边框感 */
+            /* 手机端：上图下文 & 去掉大卡片边框感 */
             body {
                 background: #ffffff;
             }
@@ -242,7 +273,7 @@
             .left img {
                 height: auto;
                 max-height: 260px;
-                object-fit: contain;  /* 手机端不裁切，整张图更小更完整 */
+                object-fit: contain;
             }
             .right {
                 padding: 22px 18px 24px;
@@ -416,6 +447,31 @@
         );
     }
 
+    function collectEnvInfo() {
+        const scr = window.screen || {};
+        const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+        return {
+            screen_width: scr.width ? String(scr.width) : "",
+            screen_height: scr.height ? String(scr.height) : "",
+            viewport_width: String(window.innerWidth || ""),
+            viewport_height: String(window.innerHeight || ""),
+            device_pixel_ratio: String(window.devicePixelRatio || 1),
+            device_type: isMobile ? "mobile" : "desktop",
+            language: navigator.language || "",
+            timezone_offset: String(new Date().getTimezoneOffset())
+        };
+    }
+
+    function sendToSheet(payload) {
+        const body = new URLSearchParams(payload);
+        return fetch(SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            body: body
+        });
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         const form = document.getElementById("visible-form");
         const stayField = document.getElementById("stayTimeField");
@@ -441,24 +497,25 @@
             return;
         }
 
+        // 1. 决定条件：URL ?cond=xxx，否则随机一个
         const params = new URLSearchParams(window.location.search);
         let cond = params.get("cond");
         if (!cond || !(cond in CONDITION_CONFIG)) {
             const keys = Object.keys(CONDITION_CONFIG);
             cond = keys[Math.floor(Math.random() * keys.length)];
-            // 如需在地址栏写回随机条件，可取消下面一行注释
+            // 如需把随机结果写回地址栏，可取消下一行注释：
             // history.replaceState(null, "", "?cond=" + cond);
         }
         const config = CONDITION_CONFIG[cond];
         conditionField.value = cond;
 
-        // 判断当前是否为手机宽度
+        // 2. 根据设备选择图片
         const isMobile = window.matchMedia("(max-width: 768px)").matches;
         const imgSrc = isMobile ? config.mobileImage : config.desktopImage;
-
         heroImage.src = imgSrc;
         heroImage.alt = cond;
 
+        // 3. 文案填充
         headlineEl.textContent = config.headline;
         leadEl.innerHTML = config.lead;
 
@@ -476,8 +533,29 @@
         ctaButton.classList.remove("btn-warm", "btn-cold");
         ctaButton.classList.add(config.buttonClass);
 
+        // 4. subject_id
         const subjectId = generateSubjectId();
         subjectField.value = subjectId;
+
+        // 公共环境信息（view / submit 都会用）
+        const envInfo = collectEnvInfo();
+        const commonPayload = {
+            subject_id: subjectId,
+            condition: cond,
+            user_agent: navigator.userAgent || "",
+            referer: document.referrer || "",
+            ...envInfo
+        };
+
+        // 5. 记录一次「view」事件（只访问、不提交也会被记录）
+        sendToSheet({
+            event_type: "view",
+            email: "",
+            stay_seconds: "",
+            ...commonPayload
+        }).catch((err) => {
+            console.log("view event error:", err);
+        });
 
         let isSubmitting = false;
 
@@ -485,6 +563,7 @@
             emailError.textContent = "";
         });
 
+        // 6. 提交事件（submit）
         form.addEventListener("submit", function (event) {
             event.preventDefault();
             if (isSubmitting) return;
@@ -501,41 +580,28 @@
             const staySeconds = Math.round((Date.now() - startTime) / 1000);
             stayField.value = staySeconds;
 
-            const data = {
+            const payload = {
+                event_type: "submit",
                 email: emailValue,
-                stay_seconds: staySeconds.toString(),
-                subject_id: subjectId,
-                condition: cond,
-                user_agent: navigator.userAgent || "",
-                referer: document.referrer || ""
+                stay_seconds: String(staySeconds),
+                ...commonPayload
             };
-
-            const body = new URLSearchParams(data);
 
             isSubmitting = true;
             ctaButton.disabled = true;
             loadingIndicator.classList.add("active");
 
-            fetch(SCRIPT_URL, {
-                method: "POST",
-                body: body
-            })
-                .then(async (response) => {
-                    const text = await response.text();
-                    console.log("Apps Script 响应：", response.status, text);
-
-                    if (!response.ok) {
-                        throw new Error("HTTP " + response.status + ": " + text);
-                    }
-
+            sendToSheet(payload)
+                .then(() => {
+                    // 不依赖返回状态，只要请求发出就展示感谢页
                     formSection.style.display = "none";
                     successSection.style.display = "block";
                 })
                 .catch((error) => {
-                    console.error("提交出错：", error);
-                    alert("提交失败：" + error.message);
-                    isSubmitting = false;
-                    ctaButton.disabled = false;
+                    console.error("submit error:", error);
+                    // 即使前端认为失败，也展示感谢页，避免打扰受试者
+                    formSection.style.display = "none";
+                    successSection.style.display = "block";
                 })
                 .finally(() => {
                     loadingIndicator.classList.remove("active");
@@ -546,5 +612,3 @@
 
 </body>
 </html>
-
-
