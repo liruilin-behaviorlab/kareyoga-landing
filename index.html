@@ -12,16 +12,15 @@
             background: linear-gradient(135deg, #f5f6fa, #eef3ff);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial;
             color: #1a1a1a;
-            overflow-x: hidden; /* 避免缩放后出现横向滚动条 */
+            overflow-x: hidden;
         }
 
         .page-shell {
             padding: 20px 12px 40px;
         }
 
-        /* 主卡片容器 */
         .wrapper {
-            width: clamp(880px, 70vw, 1320px); /* 自适应宽度，上下限控制 */
+            width: clamp(880px, 70vw, 1320px);
             margin: 24px auto 40px;
 
             background: #ffffff;
@@ -175,7 +174,6 @@
             cursor: default;
         }
 
-        /* 暖色按钮（橙） */
         .btn-warm {
             background: #f97316;
             border-color: #f97316;
@@ -186,7 +184,6 @@
             border-color: #ea580c;
         }
 
-        /* 冷色按钮（蓝） */
         .btn-cold {
             background: #2563eb;
             border-color: #2563eb;
@@ -226,7 +223,6 @@
             40% { transform: translateY(-4px); opacity: 1; }
         }
 
-        /* 大屏字体略放大，但保持比例 */
         @media (min-width: 1200px) {
             h1 {
                 font-size: 22px;
@@ -263,7 +259,6 @@
             }
         }
 
-        /* 手机端：全宽展示 */
         @media (max-width: 768px) {
             body {
                 background: #ffffff;
@@ -316,7 +311,6 @@
             margin-bottom: 6px;
         }
 
-        /* ====== 大屏缩放：让 24/27/32 寸上看起来接近 125% 效果 ====== */
         #landing-card {
             transform-origin: top center;
         }
@@ -332,13 +326,11 @@
                 transform: scale(1.18);
             }
         }
-        /* ============================================================ */
     </style>
 </head>
 
 <body>
 <div class="page-shell">
-    <!-- 主卡片加 id，用来做缩放 -->
     <div class="wrapper" id="landing-card">
         <div class="left">
             <img id="heroImage" src="warm.png" alt="Kare Yoga program" />
@@ -377,13 +369,6 @@
                         required
                     />
                     <div class="helper-text">Please complete this required field.</div>
-                    
-                    <!-- <div class="study-note">
-                        Kare Yoga Online is currently being developed as a new online program.
-                        If this sounds interesting, you can leave your email to register your interest.
-                        We may send you one follow-up message with more details once the program is ready.
-                    </div> -->
-                    
                     <div id="email-error" class="error-message"></div>
 
                     <button id="ctaButton" type="submit">
@@ -400,11 +385,10 @@
             </div>
 
             <div id="success-section" class="success-card">
-                <h2>Thank you for joining Kare Yoga</h2>
+                <h2>Thank you for your interest in Kare Yoga</h2>
                 <p>Your email has been received.</p>
                 <p>
-                    We are currently preparing this online yoga program as part of an academic project.
-                    Once more details are ready, we may send you one follow-up email with information about the planned sessions.
+                   We’ll send you one follow-up email with more details once this online program is ready to begin.
                 </p>
             </div>
         </div>
@@ -412,7 +396,7 @@
 </div>
 
 <script>
-    // 在这里填入你的 Apps Script Web App URL（以 /exec 结尾）
+    // 填入 Apps Script Web App URL（Google 表格）
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwnkQOgXH7c8A5J-3waQGEE-viwqyTtUqY9gRRKXx3kw4SnwFp-qP43UgA77oQipSNe/exec";
 
     const CONDITION_CONFIG = {
@@ -422,15 +406,15 @@
             buttonClass: "btn-warm",
             buttonText: "Get Started Now",
             headline: "Start Your Flow Today — Power Yoga Online with Kare Yoga",
-            lead: "Your journey to strength and energy begins now. Join live, dynamic Power Yoga sessions designed to keep you moving, progressing, and achieving your daily goals.",
+            lead: "Your journey to strength and energy begins <em>now</em>. Join live, dynamic Power Yoga sessions designed to keep you moving, progressing, and achieving your daily goals.",
             bullets: [
                 "Fast-paced live classes with real-time feedback",
                 "Designed to energize both body and mind",
                 "Boost stamina and flexibility through every session",
                 "Stay motivated with our weekly progress tracker"
             ],
-            closing1: "We’re launching an energetic introduction session for new members ready to move forward with Kare Yoga.",
-            closing2: "Enter your email to reserve your spot and be the first to kick off your flow with Kare Yoga Online."
+            closing1: "We’re currently developing this online power yoga course and will invite motivated members to try the first sessions.",
+            closing2: "Enter your email to get launch updates; we won’t spam you or share your address, and we’ll only use it for this course."
         },
         L_Cold: {
             desktopImage: "cold.png",
@@ -438,15 +422,15 @@
             buttonClass: "btn-cold",
             buttonText: "Get Started Now",
             headline: "Start Your Flow Today — Power Yoga Online with Kare Yoga",
-            lead: "Your journey to strength and energy begins now. Join live, dynamic Power Yoga sessions designed to keep you moving, progressing, and achieving your daily goals.",
+            lead: "Your journey to strength and energy begins <em>now</em>. Join live, dynamic Power Yoga sessions designed to keep you moving, progressing, and achieving your daily goals.",
             bullets: [
                 "Fast-paced live classes with real-time feedback",
                 "Designed to energize both body and mind",
                 "Boost stamina and flexibility through every session",
                 "Stay motivated with our weekly progress tracker"
             ],
-            closing1: "We’re launching an energetic introduction session for new members ready to move forward with Kare Yoga.",
-            closing2: "Enter your email to reserve your spot and be the first to kick off your flow with Kare Yoga Online."
+            closing1: "We’re currently developing this online power yoga course and will invite motivated members to try the first sessions.",
+            closing2: "Enter your email to get launch updates; we won’t spam you or share your address, and we’ll only use it for this course."
         },
         A_Warm: {
             desktopImage: "warm.png",
@@ -461,8 +445,8 @@
                 "Personalized feedback to refine your technique",
                 "Flexible schedules to fit your lifestyle"
             ],
-            closing1: "We’re preparing a free introduction session for new members interested in mindful practice.",
-            closing2: "Enter your email to receive detailed course information and choose the plan that fits you best."
+            closing1: "We’re currently developing this online meditation course and may invite interested members to try an early session.",
+            closing2: "Enter your email to receive updates; we won’t spam you or share your address, and we’ll only use it for this course."
         },
         A_Cold: {
             desktopImage: "cold.png",
@@ -477,8 +461,8 @@
                 "Personalized feedback to refine your technique",
                 "Flexible schedules to fit your lifestyle"
             ],
-            closing1: "We’re preparing a free introduction session for new members interested in mindful practice.",
-            closing2: "Enter your email to receive detailed course information and choose the plan that fits you best."
+            closing1: "We’re currently developing this online meditation course and may invite interested members to try an early session.",
+            closing2: "Enter your email to receive updates; we won’t spam you or share your address, and we’ll only use it for this course."
         }
     };
 
@@ -521,7 +505,6 @@
     }
 
     function logSession(eventType, emailValue, options = {}) {
-        // view_only 和 submit 各自最多记录一次
         if (eventType === "view_only") {
             if (hasLoggedViewOnly) return;
             hasLoggedViewOnly = true;
@@ -571,25 +554,20 @@
             return;
         }
 
-        // 1. 条件分配
         const params = new URLSearchParams(window.location.search);
         let cond = params.get("cond");
         if (!cond || !(cond in CONDITION_CONFIG)) {
             const keys = Object.keys(CONDITION_CONFIG);
             cond = keys[Math.floor(Math.random() * keys.length)];
-            // 如需把随机结果写回地址栏，可取消下面这一行注释：
-            // history.replaceState(null, "", "?cond=" + cond);
         }
         const config = CONDITION_CONFIG[cond];
         conditionField.value = cond;
 
-        // 2. 图片选择
         const isMobile = window.matchMedia("(max-width: 768px)").matches;
         const imgSrc = isMobile ? config.mobileImage : config.desktopImage;
         heroImage.src = imgSrc;
         heroImage.alt = cond;
 
-        // 3. 文案填充
         headlineEl.textContent = config.headline;
         leadEl.innerHTML = config.lead;
         bulletList.innerHTML = "";
@@ -605,7 +583,6 @@
         ctaButton.classList.remove("btn-warm", "btn-cold");
         ctaButton.classList.add(config.buttonClass);
 
-        // 4. subject_id + 环境信息
         const subjectId = generateSubjectId();
         subjectField.value = subjectId;
 
@@ -617,15 +594,12 @@
             referer: document.referrer || "",
             ...envInfo
         };
-        // 挂到 window 上，给 logSession 用
         window.__commonPayload = commonPayload;
 
-        // 输入时清除错误提示
         emailInput.addEventListener("input", () => {
             emailError.textContent = "";
         });
 
-        // 提交：事件类型 submit
         form.addEventListener("submit", function (event) {
             event.preventDefault();
             if (hasSubmitted) return;
@@ -645,13 +619,11 @@
 
             logSession("submit", emailValue, { keepalive: false });
 
-            // 直接展示成功卡片，不等网络返回
             formSection.style.display = "none";
             successSection.style.display = "block";
             loadingIndicator.classList.remove("active");
         });
 
-        // 未提交就离开页面：事件类型 view_only
         function handlePossibleLeave() {
             if (!hasSubmitted) {
                 logSession("view_only", "", { keepalive: true });
@@ -672,6 +644,3 @@
 
 </body>
 </html>
-
-
-
