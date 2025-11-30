@@ -22,7 +22,6 @@
         .wrapper {
             width: clamp(880px, 70vw, 1320px);
             margin: 24px auto 40px;
-
             background: #ffffff;
             border-radius: 18px;
             overflow: hidden;
@@ -86,7 +85,15 @@
             font-size: 14px;
             color: #334155;
             line-height: 1.6;
-            margin-bottom: 14px;
+            margin-bottom: 10px;
+        }
+
+        /* 新增的小标题样式 */
+        .expect-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 8px 0 4px;
         }
 
         ul {
@@ -233,6 +240,9 @@
             .email-label {
                 font-size: 15px;
             }
+            .expect-title {
+                font-size: 16px;
+            }
             .success-card h2 {
                 font-size: 20px;
             }
@@ -250,6 +260,9 @@
             .closing,
             .email-label {
                 font-size: 16px;
+            }
+            .expect-title {
+                font-size: 17px;
             }
             .success-card h2 {
                 font-size: 22px;
@@ -347,6 +360,9 @@
 
                 <p class="lead" id="lead"></p>
 
+                <!-- 新增的小标题节点 -->
+                <p class="expect-title" id="expectTitle"></p>
+
                 <ul id="bulletList"></ul>
 
                 <p class="closing" id="closing1"></p>
@@ -388,7 +404,7 @@
                 <h2>Thank you for your interest in Kare Yoga</h2>
                 <p>Your email has been received.</p>
                 <p>
-                   We’ll send you one follow-up email with more details once this online program is ready to begin.
+                    We’ll send you one follow-up email with more details once this online program is ready to begin.
                 </p>
             </div>
         </div>
@@ -396,7 +412,7 @@
 </div>
 
 <script>
-    // 填入 Apps Script Web App URL（Google 表格）
+    // Apps Script Web App URL（Google 表格）
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwnkQOgXH7c8A5J-3waQGEE-viwqyTtUqY9gRRKXx3kw4SnwFp-qP43UgA77oQipSNe/exec";
 
     const CONDITION_CONFIG = {
@@ -407,7 +423,7 @@
             buttonText: "Get Started Now",
             headline: "Start Your Flow Today — Power Yoga Online with Kare Yoga",
             lead: "Your journey to greater strength and energy begins now, encouraging you to take action and keep moving forward. Our Power Yoga program helps you build momentum and achieve steady progress with each session—supported by live instructors who keep you active, engaged, and continuously advancing.",
-            headline: "What You Can Expect:",
+            expectTitle: "What You Can Expect:",
             bullets: [
                 "Fast-paced classes that keep you moving continuously",
                 "Energizing flows that activate body and mind",
@@ -424,7 +440,7 @@
             buttonText: "Get Started Now",
             headline: "Start Your Flow Today — Power Yoga Online with Kare Yoga",
             lead: "Your journey to greater strength and energy begins now, encouraging you to take action and keep moving forward. Our Power Yoga program helps you build momentum and achieve steady progress with each session—supported by live instructors who keep you active, engaged, and continuously advancing.",
-            headline: "What You Can Expect:",
+            expectTitle: "What You Can Expect:",
             bullets: [
                 "Fast-paced classes that keep you moving continuously",
                 "Energizing flows that activate body and mind",
@@ -441,7 +457,7 @@
             buttonText: "Learn More",
             headline: "Find Your Best Fit — Meditation Yoga Online with Kare Yoga",
             lead: "Before beginning any practice, it is important to carefully consider which approach aligns most accurately with your needs. Our Meditation Yoga program helps you evaluate different methods and identify the option that best suits you—supported by experienced instructors who offer clear guidance and thoughtful, reflective feedback.",
-            headline: "What You Can Expect:",
+            expectTitle: "What You Can Expect:",
             bullets: [
                 "Clear instructions to evaluate each posture accurately",
                 "Mindful attention to breathing, alignment, and sensations",
@@ -456,9 +472,9 @@
             mobileImage: "product_cold.jpg",
             buttonClass: "btn-cold",
             buttonText: "Learn More",
-              headline: "Find Your Best Fit — Meditation Yoga Online with Kare Yoga",
+            headline: "Find Your Best Fit — Meditation Yoga Online with Kare Yoga",
             lead: "Before beginning any practice, it is important to carefully consider which approach aligns most accurately with your needs. Our Meditation Yoga program helps you evaluate different methods and identify the option that best suits you—supported by experienced instructors who offer clear guidance and thoughtful, reflective feedback.",
-            headline: "What You Can Expect:",
+            expectTitle: "What You Can Expect:",
             bullets: [
                 "Clear instructions to evaluate each posture accurately",
                 "Mindful attention to breathing, alignment, and sensations",
@@ -546,6 +562,7 @@
         const heroImage = document.getElementById("heroImage");
         const headlineEl = document.getElementById("headline");
         const leadEl = document.getElementById("lead");
+        const expectTitleEl = document.getElementById("expectTitle");
         const bulletList = document.getElementById("bulletList");
         const closing1El = document.getElementById("closing1");
         const closing2El = document.getElementById("closing2");
@@ -574,6 +591,7 @@
 
         headlineEl.textContent = config.headline;
         leadEl.innerHTML = config.lead;
+        expectTitleEl.textContent = config.expectTitle || "";
         bulletList.innerHTML = "";
         config.bullets.forEach((txt) => {
             const li = document.createElement("li");
